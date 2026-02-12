@@ -2,7 +2,7 @@
 
 import joblib
 import numpy as np
-from recommend import get_recommendation
+from src.recommend import get_recommendation
 
 def predict_child():
     model = joblib.load("models/malnutrition_model.pkl")
