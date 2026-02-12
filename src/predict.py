@@ -1,8 +1,8 @@
-# load trained model + scalar, accept manual input, output prediction 
+# load trained model + scaler, accept manual input, output prediction 
 
 import joblib
 import numpy as np
-from src.recommend import get_recommendation
+from src.recommend import interpret_prediction, get_recommendation
 
 def predict_child():
     model = joblib.load("models/malnutrition_model.pkl")
@@ -22,8 +22,26 @@ def predict_child():
     sample_scaled = scaler.transform(sample)
 
     prediction = model.predict(sample_scaled)[0]
-    probability = model.predict_proba(sample_scaled).max()
+    probabilities = model.predict_proba(sample_scaled)[0]
+    confidence = max(probabilities)
 
-    print("\nPredicted Class:", prediction)
-    print("Confidence:", round(probability * 100, 2), "%")
-    print("Recommendation:", get_recommendation(prediction))
+    condition = interpret_prediction(prediction)
+    recommendation = get_recommendation(prediction)
+
+    print("\n--- Input Summary ---")
+    print(f"Age: {age} months")
+    print(f"Weight: {weight} kg")
+    print(f"Height: {height} cm")
+    print(f"MUAC: {muac} mm")
+    print(f"Hemoglobin: {hb}")
+
+    print("\n--- Assessment Report ---")
+    print(f"Condition Detected: {condition}")
+    print(f"Model Confidence: {round(confidence * 100, 2)}%")
+
+    print("\n--- Dietary Recommendation ---")
+    print(recommendation)
+
+
+if __name__ == "__main__":
+    predict_child()
