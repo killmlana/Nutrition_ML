@@ -1,23 +1,27 @@
-# maps predicted class and makes recommendatiions
+def acute_text(label):
+    mapping = {
+        0: "Normal",
+        1: "Moderate Acute Malnutrition (MAM)",
+        2: "Severe Acute Malnutrition (SAM)"
+    }
+    return mapping.get(label, "Unknown")
 
-LABELS = {
-    0: "Normal",
-    1: "Moderate Acute Malnutrition (MAM)",
-    2: "Severe Acute Malnutrition (SAM)",
-    3: "Stunting Risk",
-    4: "Anemia"
-}
 
-RECOMMENDATIONS = {
-    0: "Maintain balanced diet with vegetables, pulses, milk and fruits.",
-    1: "Increase protein and calorie intake: lentils, banana, oil, peanut paste.",
-    2: "Severe risk detected. Provide high-protein, energy-dense foods immediately and refer to clinic.",
-    3: "Focus on long-term protein and micronutrient-rich foods.",
-    4: "Increase iron-rich foods: spinach, ragi, jaggery + Vitamin C fruits."
-}
+def build_recommendation(acute_label, stunting_flag, anemia_flag):
+    recommendations = []
 
-def interpret_prediction(label):
-    return LABELS.get(label, "Unknown Condition")
+    if acute_label == 1:
+        recommendations.append("Increase protein and calorie intake.")
+    if acute_label == 2:
+        recommendations.append("Provide high-protein, energy-dense foods immediately and refer to clinic.")
 
-def get_recommendation(label):
-    return RECOMMENDATIONS.get(label, "No recommendation available.")
+    if stunting_flag:
+        recommendations.append("Focus on long-term protein and micronutrient-rich foods.")
+
+    if anemia_flag:
+        recommendations.append("Increase iron-rich foods + Vitamin C fruits.")
+
+    if not recommendations:
+        recommendations.append("Maintain balanced diet with vegetables, pulses, milk and fruits.")
+
+    return recommendations
