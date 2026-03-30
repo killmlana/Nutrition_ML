@@ -1,1 +1,31 @@
-Models/
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Generated models & processed data
+models/
+data/processed/
+
+# Runtime database
+data/nutrition.db
+
+# Large data files (CNNS reports, zips)
+data/CNNS_reports/
+data/CNNS_reports.zip
+
+# Test images
+data/*.jpg
+data/*.png
+data/*.webp
+
+# InsightFace models (downloaded at runtime)
+.insightface/
+
+# IDE
+.idea/
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore

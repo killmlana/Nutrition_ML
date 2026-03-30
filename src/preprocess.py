@@ -6,12 +6,16 @@ from sklearn.model_selection import train_test_split
 
 
 def preprocess():
-    df = pd.read_csv("data/raw/synthetic_data.csv")
+    df = pd.read_stata("data/synthetic_cnns_multistate_1to4_from_factsheets.dta")
 
-    X = df[["age", "sex", "weight", "height", "muac", "hb", "bmi"]]
+    df["sex"] = df["sex"].map({"Female": 0, "Male": 1})
+    df["bmi"] = df["weight_kg"] / ((df["height_cm"] / 100) ** 2)
 
-    y_acute = df["acute_label"]
-    y_stunting = df["stunting_flag"]
+    X = df[["age_months", "sex", "weight_kg", "height_cm", "muac_mm", "hemoglobin_g_dl", "bmi"]]
+    X.columns = ["age", "sex", "weight", "height", "muac", "hb", "bmi"]
+
+    y_acute = df["wasted_proxy"]
+    y_stunting = df["stunted_proxy"]
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
@@ -38,7 +42,7 @@ def preprocess():
 
     joblib.dump(scaler, "data/processed/scaler.pkl")
 
-    print("Preprocessing complete.")
+    print(f"Preprocessing complete. {len(df)} samples from CNNS data.")
 
 
 if __name__ == "__main__":

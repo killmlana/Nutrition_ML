@@ -1,4 +1,7 @@
-pandas 
+pandas
 joblib
 scikit-learn
 nicegui
+Pillow
+insightface
+onnxruntime

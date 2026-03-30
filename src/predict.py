@@ -1,7 +1,7 @@
 import joblib
 import pandas as pd
-from src.rule_engine import check_anemia
-from src.recommend import acute_text, build_recommendation
+from src.rule_engine import check_anemia, check_muac
+from src.recommend import acute_text, muac_text, risk_level, build_recommendation
 
 
 def predict_child():
@@ -26,18 +26,25 @@ def predict_child():
 
     sample_scaled = scaler.transform(sample_df)
 
-    acute_pred = acute_model.predict(sample_scaled)[0]
-    stunting_pred = stunting_model.predict(sample_scaled)[0]
-    anemia_flag = check_anemia(hb)
+    wasting_pred = int(acute_model.predict(sample_scaled)[0])
+    stunting_pred = int(stunting_model.predict(sample_scaled)[0])
+    anemia_flag = int(check_anemia(hb))
+    muac_status = check_muac(muac)
+    risk = risk_level(wasting_pred, stunting_pred, anemia_flag, muac_status)
 
     print("\n--- Assessment Report ---")
-    print("Acute Malnutrition:", acute_text(acute_pred))
-    print("Stunting Risk:", "Yes" if stunting_pred else "No")
+    print("Wasting (WHZ):", acute_text(wasting_pred))
+    print("MUAC Status:", muac_text(muac_status))
+    print("Stunting:", "Yes" if stunting_pred else "No")
     print("Anemia:", "Yes" if anemia_flag else "No")
+    print("Risk Level:", risk.upper())
 
-    print("\n--- Dietary Focus ---")
-    for rec in build_recommendation(acute_pred, stunting_pred, anemia_flag):
-        print(rec)
+    print("\n--- Recommendations ---")
+    for rec in build_recommendation(wasting_pred, stunting_pred, anemia_flag, muac_status):
+        print(f"\n[{rec['priority'].upper()}] {rec['category']}")
+        print(f"  {rec['text']}")
+        for detail in rec.get('details', []):
+            print(f"  - {detail}")
 
 
 if __name__ == "__main__":
